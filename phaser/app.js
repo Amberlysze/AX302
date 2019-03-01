@@ -90,7 +90,7 @@ function update(){
 		player.animation.play('left');
 	} else if(cursor.right.isDown || dKey.isDown){
 		player.body.velocity.x = 150;
-		player animation.play('right');
+		player.animation.play('right');
 	} else {
 		player.animation.stop();
 		player.frame = 4;
