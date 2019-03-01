@@ -51,8 +51,8 @@ function create(){
 	player.body.gravity.y = 300;
 	player.body.bounce.y = 0.2;
 	player.body.collideWorldBound = true;
-	player.animation.add('left', [0, 1, 2, 3], 10, true);
-	player.animation.add('right', [5, 6, 7, 8], 10, true);
+	player.animations.add('left', [0, 1, 2, 3], 10, true);
+	player.animations.add('right', [5, 6, 7, 8], 10, true);
 
 	enemy = game.add.sprite(760, 40, 'baddie');
     game.physics.arcade.enable(enemy);
@@ -63,11 +63,11 @@ function create(){
 	enemy.animation.add('right', [2, 3], 10, true);
 
 	stars = game.add.physicsGroup();
-	star.enableBody = ture;
+	stars.enableBody = ture;
 	for(var i = 0; i < 12 ; i++){
-		var star = stars.create(i*70, 0, "stars");
-		stars.body.gravity.y = 200;
-		stars.body.bounce.y = Math.random()*0.2 + 0.7;
+		var star = stars.create(i*70, 0, "star");
+		star.body.gravity.y = 200;
+		star.body.bounce.y = Math.random()*0.2 + 0.7;
 	}
     cursor = game.input.keyboard.createCursorKeys();
     wKey = game.input.keyboard.addKey(Phaser.keyboard.W);
@@ -98,9 +98,18 @@ function update(){
 
 	if((cursor.up.isDown || wKey.isDown) && player.body.touching.down ){
 		player.body.velocity.y = -300;
+    }
+    
+    game.physics.arcade.overlap(player, stars, collectStar);
 
-	}
+} 
 
+function collectStar(player, star){
+    score = score +1;
+    scoretext.setText(score);
+
+    star.kill();
+    star.reset(Math.random(Math.random() * 760), 0);
 }
  
 
