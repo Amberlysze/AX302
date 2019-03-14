@@ -128,12 +128,12 @@ function loseLife(player, star){
 }
 
 function moveEnemy(){
-     if(enemy1.x > 759){
-     	enemy1.animations.play('left');
+     if(enemy.x > 759){
+     	enemy.animations.play('left');
      	enemy.body.velocity.x = -120;
-     }else if(enemy1.x < 405){
-     	enemy1.animations.play('right');
-     	enemy1.body.velocity.x = 120;
+     }else if(enemy.x < 405){
+     	enemy.animations.play('right');
+     	enemy.body.velocity.x = 120;
      }
 }
 
