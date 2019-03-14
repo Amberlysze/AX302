@@ -101,11 +101,11 @@ function update(){
     }
     
     game.physics.arcade.overlap(player, stars, collectStar);
-    game.physics.arcade.overlap(player, stars, loseLife);
+    game.physics.arcade.overlap(player, enemy, loseLife);
 
     moveEnemy();
 
-    if(life < 0){
+    if(lives < 0){
     	endGame();
     }
 
@@ -116,12 +116,12 @@ function collectStar(player, star){
     scoretext.setText(score);
 
     star.kill();
-    star.reset(Math.random(Math.random() * 760), 0);
+    star.reset(Math.floor(Math.random() * 760), 0);
 }
  
 function loseLife(player, star){
-    life -= 1;
-    lifetext.setText(life);
+    lives -= 1;
+    livestext.setText(lives);
 
     enemy.kill();
     enemy.reset(10, 20);
@@ -141,8 +141,8 @@ function endGame(){
 	player.kill();
 	scorelabel.text = "GAME OVER! You scored " + score;
 	scoretext.visible = false;
-	lifelabel.visible = false;
-	lifetext.visible = false;
+	liveslabel.visible = false;
+	livestext.visible = false;
 }
 
 
