@@ -26,13 +26,13 @@ function create(){
 
 	var ground = platforms.create(0, 560, 'ground');
 	ground.scale.setTo(2, 2);
-	ground.body.inmoveable = true;
+	ground.body.immovable = true;
 
 	var ledge1 = platforms.create(400, 400, 'ground');
-	ledge1.body.inmoveable = true;
+	ledge1.body.immovable = true;
 
     var ledge2 = platforms.create(-100, 250, 'ground');
-	ledge2.body.inmoveable = true;
+	ledge2.body.immovable = true;
 
 	var style = {font: "bold 32px Arial", fill: "white"};
 
@@ -48,7 +48,7 @@ function create(){
 
 	player = game.add.sprite(32, 410, 'dude');
     game.physics.arcade.enable(player);
-	player.body.gravity.y = 300;
+	player.body.gravity.y = 250;
 	player.body.bounce.y = 0.2;
 	player.body.collideWorldBound = true;
 	player.animations.add('left', [0, 1, 2, 3], 10, true);
@@ -59,20 +59,20 @@ function create(){
     enemy.body.gravity.y = 500;
 	enemy.body.bounce.y = 0.2;
 	enemy.body.collideWorldBound = true;
-	enemy.animation.add('left', [0, 1], 10, true);
-	enemy.animation.add('right', [2, 3], 10, true);
+	enemy.animations.add('left', [0, 1], 10, true);
+	enemy.animations.add('right', [2, 3], 10, true);
 
 	stars = game.add.physicsGroup();
-	stars.enableBody = ture;
+	stars.enableBody = true;
 	for(var i = 0; i < 12 ; i++){
 		var star = stars.create(i*70, 0, "star");
 		star.body.gravity.y = 200;
 		star.body.bounce.y = Math.random()*0.2 + 0.7;
 	}
     cursor = game.input.keyboard.createCursorKeys();
-    wKey = game.input.keyboard.addKey(Phaser.keyboard.W);
-    aKey = game.input.keyboard.addKey(Phaser.keyboard.A);
-    sKey = game.input.keyboard.addKey(Phaser.keyboard.S);
+    wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+    aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
+    dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
 }
  
 
@@ -87,12 +87,12 @@ function update(){
 
 	if(cursor.left.isDown || aKey.isDown){
 		player.body.velocity.x = -150;
-		player.animation.play('left');
+		player.animations.play('left');
 	} else if(cursor.right.isDown || dKey.isDown){
 		player.body.velocity.x = 150;
-		player.animation.play('right');
+		player.animations.play('right');
 	} else {
-		player.animation.stop();
+		player.animations.stop();
 		player.frame = 4;
 	}
 
@@ -101,6 +101,13 @@ function update(){
     }
     
     game.physics.arcade.overlap(player, stars, collectStar);
+    game.physics.arcade.overlap(player, stars, loseLife);
+
+    moveEnemy();
+
+    if(life < 0){
+    	endGame();
+    }
 
 } 
 
@@ -112,6 +119,31 @@ function collectStar(player, star){
     star.reset(Math.random(Math.random() * 760), 0);
 }
  
+function loseLife(player, star){
+    life -= 1;
+    lifetext.setText(life);
+
+    enemy.kill();
+    enemy.reset(10, 20);
+}
+
+function moveEnemy(){
+     if(enemy1.x > 759){
+     	enemy1.animations.play('left');
+     	enemy.body.velocity.x = -120;
+     }else if(enemy1.x < 405){
+     	enemy1.animations.play('right');
+     	enemy1.body.velocity.x = 120;
+     }
+}
+
+function endGame(){
+	player.kill();
+	scorelabel.text = "GAME OVER! You scored " + score;
+	scoretext.visible = false;
+	lifelabel.visible = false;
+	lifetext.visible = false;
+}
 
 
 
