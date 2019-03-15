@@ -35,9 +35,9 @@ function create(){
 	ledge2.body.immovable = true;
 
 	var style = {font: "bold 32px Arial", fill: "white"};
-
-	scorelabel = game.add.text(300, 565, "score", style);
-	scoretext = game.add.text(420, 560, score, style);
+    
+    scorelabel = game.add.text(300, 565, "score:", style);
+	scoretext = game.add.text(400, 565, score, style);
 	scorelabel.setShadow(3, 3, 'black', 2);
 	scoretext.setShadow(3, 3, 'black', 2);
 
@@ -50,7 +50,7 @@ function create(){
     game.physics.arcade.enable(player);
 	player.body.gravity.y = 250;
 	player.body.bounce.y = 0.2;
-	player.body.collideWorldBound = true;
+	player.body.collideWorldBounds = true;
 	player.animations.add('left', [0, 1, 2, 3], 10, true);
 	player.animations.add('right', [5, 6, 7, 8], 10, true);
 
@@ -58,9 +58,17 @@ function create(){
     game.physics.arcade.enable(enemy);
     enemy.body.gravity.y = 500;
 	enemy.body.bounce.y = 0.2;
-	enemy.body.collideWorldBound = true;
+	enemy.body.collideWorldBounds = true;
 	enemy.animations.add('left', [0, 1], 10, true);
 	enemy.animations.add('right', [2, 3], 10, true);
+
+    enemy2 = game.add.sprite(9, 40, 'baddie');
+    game.physics.arcade.enable(enemy2);
+    enemy2.body.gravity.y = 500;
+	enemy2.body.bounce.y = 0.2;
+	enemy2.body.collideWorldBounds = true;
+	enemy2.animations.add('left', [0, 1], 10, true);
+	enemy2.animations.add('right', [2, 3], 10, true);
 
 	stars = game.add.physicsGroup();
 	stars.enableBody = true;
@@ -69,6 +77,19 @@ function create(){
 		star.body.gravity.y = 200;
 		star.body.bounce.y = Math.random()*0.2 + 0.7;
 	}
+
+	diamonds = game.add.physicsGroup();
+	diamonds.enableBody = true;
+	diamond = diamonds.create(Math.random()*760, 0, "diamond");
+    diamond.body.gravity.y = 300;
+    diamond.body.bounce.y = 0.2;
+
+    firstaids = game.add.physicsGroup();
+    firstaids.enableBody = true;
+    firstaid = firstaids.create(Math.random()*760, 0, "firstaid");
+    firstaid.body.gravity.y = 300;
+    firstaid.body.bounce.y = 0.2;
+
     cursor = game.input.keyboard.createCursorKeys();
     wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
     aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
@@ -76,12 +97,13 @@ function create(){
 }
  
 
-
-
 function update(){
 	game.physics.arcade.collide(player, platforms);
 	game.physics.arcade.collide(stars, platforms);
 	game.physics.arcade.collide(enemy, platforms);
+	game.physics.arcade.collide(enemy2, platforms);
+	game.physics.arcade.collide(diamonds, platforms);
+    game.physics.arcade.collide(firstaids, platforms);
 
 	player.body.velocity.x = 0;
 
@@ -102,12 +124,18 @@ function update(){
     
     game.physics.arcade.overlap(player, stars, collectStar);
     game.physics.arcade.overlap(player, enemy, loseLife);
+    game.physics.arcade.overlap(player, enemy2, loseLife);
+    game.physics.arcade.overlap(player, diamonds, addScore);
+    game.physics.arcade.overlap(player, firstaids, addLife);
 
     moveEnemy();
+    moveEnemy2();
 
-    if(lives < 0){
+    if(lives < 1){
     	endGame();
     }
+
+
 
 } 
 
@@ -118,14 +146,36 @@ function collectStar(player, star){
     star.kill();
     star.reset(Math.floor(Math.random() * 760), 0);
 }
+
+function addScore(player, diamond){
+    score = score +2;
+    scoretext.setText(score);
+
+    diamond.kill();
+    diamond.reset(Math.floor(Math.random() * 760), 0);
+}
  
-function loseLife(player, star){
+function loseLife(player, enemy){
     lives -= 1;
     livestext.setText(lives);
 
-    enemy.kill();
-    enemy.reset(10, 20);
+    player.kill();
+    player.reset(20,480)
+
+    if(lives == 1){
+    	var firstaid = firstaids.create(Math.random() * 760, 0, 'firstaid')
+    	firstaid.body.gravity.y = 200;
+    	firstaid.body.bounce.y = Math.random()*0.3 + 0.7;
+    }
 }
+
+function addLife(player, firstaid){
+    lives = lives +1
+    livestext.setText(lives);
+
+    firstaid.kill();
+}
+
 
 function moveEnemy(){
      if(enemy.x > 759){
@@ -134,6 +184,17 @@ function moveEnemy(){
      }else if(enemy.x < 405){
      	enemy.animations.play('right');
      	enemy.body.velocity.x = 120;
+     }
+}
+
+
+function moveEnemy2(){
+     if(enemy2.x > 250){
+     	enemy2.animations.play('left');
+     	enemy2.body.velocity.x = -120;
+     }else if(enemy2.x < 10){
+     	enemy2.animations.play('right');
+     	enemy2.body.velocity.x = 120;
      }
 }
 
